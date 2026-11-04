@@ -33,8 +33,8 @@ export const REPORT_MARKDOWN = `# DOKUMEN PERANCANGAN SISTEM PENDUKUNG PEMBELAJA
   - *Kebutuhan:* Membutuhkan bimbingan saat buntu (*wheel-spinning*) tanpa langsung dibocorkan seluruh kodenya; membutuhkan kepastian apakah dirinya sudah benar-benar siap menghadapi ujian lab (*Live-Coding Readiness*).
   - *Fitur:* Socratic AI Assistant (bantuan bertingkat Level 1, 2, 3), sensor deteksi paste anomali, Micro-Comprehension Check ("Explain Your Code"), dan Live Readiness Gauge.
 - **Lecturer / Asdos:**
-  - *Kebutuhan:* Memerlukan deteksi dini (*early-warning system*) terhadap mahasiswa yang mengalami ketergantungan AI eksternal sebelum ujian lab dimulai, serta peta kesulitan materi kelas.
-  - *Fitur:* Matriks 4-Kuadran Kesiapan Mahasiswa, Event Timeline Replay per mahasiswa (jejak menit ke menit), dan tombol penjadwalan bimbingan 1-on-1 tatap muka.
+  - *Kebutuhan:* Memerlukan fitur untuk mengunggah dan mengonfigurasi latihan praktikum baru yang dilengkapi sensor telemetri, mengatur kasus uji, menyusun 3 tingkat scaffolding Sokrates, serta merancang gerbang uji nalar logika anti-copas. Selain itu, asdos membutuhkan deteksi dini (*early-warning system*) terhadap mahasiswa yang mengalami ketergantungan AI eksternal sebelum ujian lab dimulai.
+  - *Fitur:* **Task Authoring Studio (Sensory Task Builder)**, Matriks 4-Kuadran Kesiapan Mahasiswa, Event Timeline Replay per mahasiswa (jejak menit ke menit), dan tombol penjadwalan bimbingan 1-on-1 tatap muka.
 
 ---
 
@@ -42,7 +42,7 @@ export const REPORT_MARKDOWN = `# DOKUMEN PERANCANGAN SISTEM PENDUKUNG PEMBELAJA
 
 ### Alur Mahasiswa (Student Flow):
 \`\`\`text
-Login → Dashboard Mahasiswa (Cek Status LCRS & Modul) 
+Login → Dashboard Mahasiswa (Cek Status LCRS & Modul yang Ditugaskan Asdos) 
   → Buka Learning Activity Page (Membaca Soal & Constraints) 
   → Menulis Kode di Editor Interaktif (Sistem Merekam Keystroke vs Paste) 
   → Mengalami Keraguan / Error → Meminta Petunjuk Sokrates Bertingkat 
@@ -54,6 +54,13 @@ Login → Dashboard Mahasiswa (Cek Status LCRS & Modul)
 ### Alur Asdos / Dosen (Lecturer Flow):
 \`\`\`text
 Login Asdos → Buka Lecturer Command Center 
+  → [FITUR AUTHORING] Unggah & Konfigurasi Latihan Praktikum Baru:
+      * Input Metadata Soal & Batasan Algoritma
+      * Setup Starter Code & Hidden Unit Tests
+      * Konfigurasi 3-Level Scaffolding Sokrates (Konsep -> Alur Logika -> Edge-Case)
+      * Rancang Micro-Comprehension Gatekeeper (Soal nalar logika + distractor miskonsepsi copas)
+      * Kalibrasi Ambang Batas Sensor (Paste threshold & durasi wajar)
+  → Publikasikan Latihan ke Kelas Mahasiswa
   → Memantau Distribusi Matriks 4-Kuadran (Fokus pada Kuadran 2: The AI-Dependent) 
   → Membuka Event Timeline Replay Mahasiswa Terindikasi (Analisis rasio paste & kegagalan kuis mikro) 
   → Mengidentifikasi Topik Sulit (Misal: Loop Invariant pada Pola Bersarang) 
@@ -63,10 +70,12 @@ Login Asdos → Buka Lecturer Command Center
 ---
 
 ## 4. UI/UX Design Description (Komponen 5.4)
-1. **Student Dashboard:** Menampilkan Live-Coding Readiness Score (LCRS) berbentuk meteran progresif, streak belajar, serta modul latihan terstruktur. Dilengkapi indikator transparansi perekaman telemetri.
+1. **Student Dashboard:** Menampilkan Live-Coding Readiness Score (LCRS) berbentuk meteran progresif, streak belajar, serta modul latihan terstruktur yang baru ditugaskan asdos. Dilengkapi indikator transparansi perekaman telemetri.
 2. **Learning Activity Page:** Ruang kerja 3 kolom: Panel soal & batasan (kiri), Code Editor interaktif dengan sensor live keystroke/paste tracker & test runner (tengah), dan Socratic AI Assistant yang mendampingi dengan pertanyaan pancingan (kanan).
 3. **Feedback & Micro-Comprehension Page:** Menampilkan hasil kelulusan unit test yang dikunci oleh gerbang kuis mikro: mahasiswa harus memilih penjelasan logika fungsi potongan kodenya sendiri untuk membuktikan pemahaman konseptual.
-4. **Lecturer / Asdos Dashboard:** Pusat komando Learning Analytics berisi KPI kelas, visualisasi interaktif 4-Kuadran (Independent Thinker, The AI-Dependent, Struggling Novice, Slow Pacer), tabel roster mahasiswa dengan indikator risiko, dan modal *Timeline Event Replay*.
+4. **Lecturer / Asdos Dashboard & Task Studio:** 
+   - Pusat komando Learning Analytics berisi KPI kelas, visualisasi interaktif 4-Kuadran (Independent Thinker, The AI-Dependent, Struggling Novice, Slow Pacer), tabel roster mahasiswa dengan indikator risiko, dan modal *Timeline Event Replay*.
+   - **Task Authoring Studio:** Antarmuka khusus asdos untuk menyusun latihan baru, mengkalibrasi sensor telemetri, dan mempublikasikannya ke seluruh kelas secara instan.
 
 ---
 

@@ -46,7 +46,8 @@ SocraticCode merancang antarmuka editor dan interaksi belajar sebagai **sensor t
    * Ringkasan kelulusan test cases.
    * **Modul Explain-Your-Code:** Kuis logika berbobot untuk memverifikasi pemahaman alur program.
    * Telemetri kognitif sesi (Rasio ketukan organik, waktu pengerjaan, petunjuk terpakai).
-4. **Lecturer / Asdos Dashboard (Learning Analytics Center):**
+4. **Lecturer / Asdos Dashboard & Task Studio (Learning Analytics Center):**
+   * **🛠️ Task Authoring Studio:** Antarmuka khusus Asdos untuk menyusun dan mengunggah soal latihan praktikum baru. Mengonfigurasi batasan algoritma, unit tests (publik/hidden), 3 level scaffolding Sokrates, pertanyaan uji nalar logika anti-copas AI, serta mengkalibrasi ambang batas sensor telemetri.
    * **Matriks 4-Kuadran Interaktif:**
      * 🟢 *Kuadran 1: Independent Thinkers* (Siap Ujian Lab)
      * 🔴 *Kuadran 2: The AI-Dependent ("Ilusi Paham")* — Prioritas Intervensi Asdos!

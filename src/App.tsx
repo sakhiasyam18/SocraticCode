@@ -6,11 +6,12 @@ import { FeedbackComprehensionPage } from './components/FeedbackComprehensionPag
 import { LecturerDashboard } from './components/LecturerDashboard';
 import { ReportExportModal } from './components/ReportExportModal';
 import { EXERCISES } from './data/mockData';
-import { UserRole, SessionTelemetry } from './types';
+import { UserRole, SessionTelemetry, Exercise } from './types';
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
   const [activeTab, setActiveTab] = useState<'student-dashboard' | 'learning-activity' | 'feedback' | 'lecturer-dashboard'>('student-dashboard');
+  const [exercises, setExercises] = useState<Exercise[]>(EXERCISES);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>(EXERCISES[0].id);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
@@ -32,7 +33,7 @@ export function App() {
     liveReadinessScore: 84
   });
 
-  const activeExercise = EXERCISES.find(e => e.id === selectedExerciseId) || EXERCISES[0];
+  const activeExercise = exercises.find(e => e.id === selectedExerciseId) || exercises[0] || EXERCISES[0];
 
   const handleStartExercise = (exerciseId: string) => {
     setSelectedExerciseId(exerciseId);
@@ -51,6 +52,11 @@ export function App() {
   const handleGoToLecturerDashboard = () => {
     setCurrentRole('lecturer');
     setActiveTab('lecturer-dashboard');
+  };
+
+  const handleAddNewExercise = (newEx: Exercise) => {
+    setExercises(prev => [newEx, ...prev]);
+    setSelectedExerciseId(newEx.id);
   };
 
   return (
@@ -73,7 +79,10 @@ export function App() {
         {currentRole === 'student' ? (
           <>
             {activeTab === 'student-dashboard' && (
-              <StudentDashboard onStartExercise={handleStartExercise} />
+              <StudentDashboard 
+                onStartExercise={handleStartExercise} 
+                exercises={exercises}
+              />
             )}
 
             {activeTab === 'learning-activity' && (
@@ -94,7 +103,10 @@ export function App() {
             )}
           </>
         ) : (
-          <LecturerDashboard />
+          <LecturerDashboard 
+            exercises={exercises}
+            onAddNewExercise={handleAddNewExercise}
+          />
         )}
       </main>
 

@@ -15,11 +15,17 @@ import {
 } from 'lucide-react';
 import { EXERCISES } from '../data/mockData';
 
+import { Exercise } from '../types';
+
 interface StudentDashboardProps {
   onStartExercise: (exerciseId: string) => void;
+  exercises?: Exercise[];
 }
 
-export const StudentDashboard: React.FC<StudentDashboardProps> = ({ onStartExercise }) => {
+export const StudentDashboard: React.FC<StudentDashboardProps> = ({ 
+  onStartExercise, 
+  exercises = EXERCISES 
+}) => {
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8 animate-fadeIn">
       
@@ -55,7 +61,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ onStartExerc
           {/* Quick Stat Highlights */}
           <div className="flex items-center gap-3 w-full md:w-auto">
             <button
-              onClick={() => onStartExercise(EXERCISES[0].id)}
+              onClick={() => onStartExercise(exercises[0]?.id || EXERCISES[0].id)}
               className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm shadow-glow-indigo transition-all transform hover:-translate-y-0.5"
             >
               <Code2 className="w-4 h-4" />
@@ -176,11 +182,17 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ onStartExerc
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {EXERCISES.map((ex, idx) => (
+          {exercises.map((ex, idx) => (
             <div 
               key={ex.id}
-              className="glass-card-interactive rounded-3xl p-6 border border-slate-800 flex flex-col justify-between"
+              className="glass-card-interactive rounded-3xl p-6 border border-slate-800 flex flex-col justify-between relative overflow-hidden"
             >
+              {idx === 0 && exercises.length > 2 && (
+                <div className="absolute top-0 right-0 bg-gradient-to-l from-indigo-500 to-cyan-400 text-[#090D14] font-black text-[10px] px-3 py-1 rounded-bl-xl uppercase tracking-wider shadow-sm flex items-center gap-1">
+                  <Flame className="w-3 h-3 fill-current" />
+                  Baru Ditugaskan Asdos
+                </div>
+              )}
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">

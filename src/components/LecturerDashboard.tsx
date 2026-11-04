@@ -17,25 +17,40 @@ import {
   Sparkles, 
   FileText, 
   Lock, 
-  ChevronRight,
-  ClipboardList,
-  AlertCircle,
-  HelpCircle,
-  UserCheck
+  ChevronRight, 
+  ClipboardList, 
+  AlertCircle, 
+  HelpCircle, 
+  UserCheck,
+  Plus,
+  Sliders,
+  Layers,
+  BookOpen
 } from 'lucide-react';
 import { 
   MOCK_STUDENTS, 
   LEARNING_DATA_SPECIFICATION, 
   LEARNING_ANALYTICS_OPPORTUNITIES, 
-  PRIVACY_ETHICAL_CONSIDERATIONS 
+  PRIVACY_ETHICAL_CONSIDERATIONS,
+  EXERCISES
 } from '../data/mockData';
-import { StudentAnalytics, QuadrantType, ProcessEvent } from '../types';
+import { StudentAnalytics, QuadrantType, ProcessEvent, Exercise } from '../types';
+import { TaskAuthoringBuilder } from './TaskAuthoringBuilder';
 
-export const LecturerDashboard: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<'matrix' | 'table-5-5' | 'table-5-6' | 'privacy'>('matrix');
+interface LecturerDashboardProps {
+  exercises?: Exercise[];
+  onAddNewExercise?: (newEx: Exercise) => void;
+}
+
+export const LecturerDashboard: React.FC<LecturerDashboardProps> = ({
+  exercises = EXERCISES,
+  onAddNewExercise
+}) => {
+  const [activeSubTab, setActiveSubTab] = useState<'matrix' | 'task-builder' | 'table-5-5' | 'table-5-6' | 'privacy'>('matrix');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuadrantFilter, setSelectedQuadrantFilter] = useState<QuadrantType | 'all'>('all');
   const [selectedStudentForModal, setSelectedStudentForModal] = useState<StudentAnalytics | null>(null);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
   // Filter students based on search and quadrant
   const filteredStudents = MOCK_STUDENTS.filter(student => {
@@ -72,22 +87,49 @@ export const LecturerDashboard: React.FC = () => {
           </p>
         </div>
 
-        {/* Quick Cohort Stats Badge */}
-        <div className="flex items-center gap-3 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
-          <div className="flex -space-x-2">
-            {MOCK_STUDENTS.slice(0, 4).map(s => (
-              <img key={s.id} src={s.avatar} alt={s.name} className="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" />
-            ))}
-          </div>
-          <div className="text-xs font-medium pr-2">
-            <span className="font-bold text-white">42 Mahasiswa</span>
-            <p className="text-[11px] text-emerald-400 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              12 sedang koding live
-            </p>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Quick Action: Upload New Task */}
+          <button
+            onClick={() => setActiveSubTab('task-builder')}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-600 via-indigo-600 to-indigo-500 hover:from-cyan-500 hover:to-indigo-400 text-white font-extrabold text-xs shadow-glow-cyan transition-all transform hover:scale-105"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ Upload Latihan Baru</span>
+          </button>
+
+          {/* Quick Cohort Stats Badge */}
+          <div className="flex items-center gap-3 bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+            <div className="flex -space-x-2">
+              {MOCK_STUDENTS.slice(0, 4).map(s => (
+                <img key={s.id} src={s.avatar} alt={s.name} className="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" />
+              ))}
+            </div>
+            <div className="text-xs font-medium pr-2">
+              <span className="font-bold text-white">42 Mahasiswa</span>
+              <p className="text-[11px] text-emerald-400 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                12 sedang koding live
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Success Notification Alert if an exercise was published */}
+      {successNotice && (
+        <div className="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/50 text-emerald-200 text-xs flex items-center justify-between shadow-glow-emerald animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <span><strong>Berhasil Terpublikasi:</strong> {successNotice}</span>
+          </div>
+          <button 
+            onClick={() => setSuccessNotice(null)} 
+            className="text-emerald-400 hover:text-white font-bold text-xs ml-3"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* KPI Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -183,6 +225,18 @@ export const LecturerDashboard: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveSubTab('task-builder')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap ${
+            activeSubTab === 'task-builder'
+              ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-glow-cyan'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+          }`}
+        >
+          <Sliders className="w-4 h-4" />
+          <span>Upload & Konfigurasi Latihan ({exercises.length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveSubTab('table-5-5')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap ${
             activeSubTab === 'table-5-5'
@@ -222,6 +276,43 @@ export const LecturerDashboard: React.FC = () => {
       {/* TAB 1: Matriks Kuadran & Roster Mahasiswa */}
       {activeSubTab === 'matrix' && (
         <div className="space-y-6">
+
+          {/* Active Assigned Tasks Banner */}
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                  <span>Modul Praktikum Aktif di Kelas IF-A</span>
+                  <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-mono">
+                    {exercises.length} Tugas Terpublikasi
+                  </span>
+                </h4>
+                <p className="text-[11px] text-slate-400">
+                  Semua latihan terhubung dengan sensor deteksi copas AI dan micro-comprehension gate.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1">
+              {exercises.map((ex) => (
+                <div key={ex.id} className="px-3 py-1.5 rounded-xl bg-[#080B12] border border-slate-800 text-[11px] whitespace-nowrap flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <span className="text-slate-200 font-semibold">{ex.title}</span>
+                  <span className="text-[10px] text-slate-500">({ex.difficulty})</span>
+                </div>
+              ))}
+              <button
+                onClick={() => setActiveSubTab('task-builder')}
+                className="px-3 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/40 text-indigo-200 hover:text-white text-[11px] font-bold flex items-center gap-1 whitespace-nowrap transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Tambah Soal</span>
+              </button>
+            </div>
+          </div>
           
           {/* Visual 4-Quadrant Scatter Map */}
           <div className="glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
@@ -502,6 +593,20 @@ export const LecturerDashboard: React.FC = () => {
           </div>
 
         </div>
+      )}
+
+      {/* TAB: Task Authoring & Sensor Setup Studio (Asdos Upload Task) */}
+      {activeSubTab === 'task-builder' && (
+        <TaskAuthoringBuilder
+          onPublishTask={(newEx) => {
+            if (onAddNewExercise) {
+              onAddNewExercise(newEx);
+            }
+            setSuccessNotice(`Latihan "${newEx.title}" berhasil dipublikasikan ke seluruh mahasiswa Kelas IF-A!`);
+            setActiveSubTab('matrix');
+          }}
+          onCancel={() => setActiveSubTab('matrix')}
+        />
       )}
 
       {/* TAB 2: Tabel 5.5 - Learning Data Specification (Bobot 25%) */}
