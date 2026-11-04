@@ -233,3 +233,4 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ onStartExerc
     </div>
   );
 };
+

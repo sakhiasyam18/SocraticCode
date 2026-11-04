@@ -492,3 +492,4 @@ export const PRIVACY_ETHICAL_CONSIDERATIONS = [
     explanation: 'Kategori seperti "AI-Dependent" atau "Struggling Novice" bersifat sementara (dinamis per sesi latihan) dan digunakan strictly sebagai sinyal pedagogis untuk memberikan bimbingan tambahan, BUKAN sebagai predikat nilai permanen yang merugikan mahasiswa.'
   }
 ];
+

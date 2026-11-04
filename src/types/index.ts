@@ -108,3 +108,4 @@ export interface ChatMessage {
   timestamp: string;
   hintLevel?: number;
 }
+

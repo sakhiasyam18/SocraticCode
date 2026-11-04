@@ -747,3 +747,4 @@ export const LecturerDashboard: React.FC = () => {
     </div>
   );
 };
+

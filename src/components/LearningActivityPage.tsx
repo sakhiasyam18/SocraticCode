@@ -606,3 +606,4 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
     </div>
   );
 };
+
