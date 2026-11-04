@@ -16,7 +16,10 @@ import {
   ClipboardPaste,
   Timer,
   Terminal as TerminalIcon,
-  MessageSquare
+  MessageSquare,
+  BookOpen,
+  Download,
+  FileText
 } from 'lucide-react';
 import { Exercise, SessionTelemetry, ChatMessage, SocraticHint } from '../types';
 
@@ -32,7 +35,7 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
   onBackToDashboard
 }) => {
   const [code, setCode] = useState(exercise.starterCode);
-  const [activeTab, setActiveTab] = useState<'problem' | 'testcases'>('problem');
+  const [activeTab, setActiveTab] = useState<'problem' | 'testcases' | 'material'>('problem');
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testResults, setTestResults] = useState<Array<{ id: number; passed: boolean; actual: string; timeMs: number }>>([]);
   const [allTestsPassed, setAllTestsPassed] = useState(false);
@@ -291,7 +294,7 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
         {/* Column 1: Problem Description & Constraints (4 Cols) */}
         <div className="lg:col-span-3 glass-panel rounded-2xl border border-slate-800 flex flex-col overflow-hidden">
           
-          <div className="flex items-center border-b border-slate-800 bg-slate-900/60 p-2 gap-2">
+          <div className="flex items-center border-b border-slate-800 bg-slate-900/60 p-2 gap-1.5">
             <button
               onClick={() => setActiveTab('problem')}
               className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -300,7 +303,7 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Deskripsi Soal
+              Soal
             </button>
             <button
               onClick={() => setActiveTab('testcases')}
@@ -310,12 +313,22 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Kasus Uji ({exercise.testCases.length})
+              Kasus Uji
+            </button>
+            <button
+              onClick={() => setActiveTab('material')}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                activeTab === 'material'
+                  ? 'bg-cyan-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Materi & PDF
             </button>
           </div>
 
           <div className="p-5 flex-1 overflow-y-auto space-y-5 text-slate-300 text-xs leading-relaxed">
-            {activeTab === 'problem' ? (
+            {activeTab === 'problem' && (
               <>
                 <div className="space-y-2">
                   <h3 className="font-extrabold text-sm text-white">Petunjuk Pengerjaan:</h3>
@@ -342,7 +355,9 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
                   </p>
                 </div>
               </>
-            ) : (
+            )}
+
+            {activeTab === 'testcases' && (
               <div className="space-y-3">
                 <h4 className="font-bold text-slate-200">Test Cases Validation:</h4>
                 {exercise.testCases.map((tc) => (
@@ -361,6 +376,69 @@ export const LearningActivityPage: React.FC<LearningActivityPageProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {activeTab === 'material' && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                  <span className="font-extrabold text-white text-xs">Materi & Teori Dasar:</span>
+                  <button
+                    onClick={() => {
+                      const mat = exercise.material;
+                      const text = `Modul: ${exercise.title}\nTopik: ${exercise.topic}\n\nRingkasan:\n${mat?.summary || exercise.description}\n\nPoin Kunci:\n${mat?.keyTakeaways.join('\n') || '- Pahami alur loop'}`;
+                      const blob = new Blob([text], { type: 'text/plain' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = mat?.pdfFileName.replace('.pdf', '_Handout.txt') || 'Modul_Praktikum.txt';
+                      a.click();
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600 border border-cyan-500/40 text-cyan-200 hover:text-white text-[10px] font-bold transition-all"
+                  >
+                    <Download className="w-3 h-3" />
+                    <span>Unduh PDF</span>
+                  </button>
+                </div>
+
+                {exercise.material ? (
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-indigo-200 text-[11px]">
+                      <strong className="text-white block mb-0.5">{exercise.material.title}</strong>
+                      <p>{exercise.material.summary}</p>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {exercise.material.sections.map((sec, i) => (
+                        <div key={i} className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+                          <h4 className="font-bold text-cyan-300 text-[11px]">{sec.title}</h4>
+                          <p className="text-slate-300 text-[11px] leading-relaxed">{sec.content}</p>
+                          {sec.codeSnippet && (
+                            <pre className="p-2 rounded bg-[#080B12] font-mono text-[10px] text-emerald-300 overflow-x-auto">
+                              {sec.codeSnippet}
+                            </pre>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                      <span className="font-bold text-white text-[11px]">Takeaway Kunci:</span>
+                      <ul className="list-disc list-inside text-slate-400 text-[10px] space-y-1">
+                        {exercise.material.keyTakeaways.map((k, i) => (
+                          <li key={i}>{k}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center space-y-2">
+                    <BookOpen className="w-6 h-6 text-slate-500 mx-auto" />
+                    <p className="text-xs text-slate-400">
+                      Gunakan batasan soal di tab "Soal" dan panduan Sokrates untuk menuntun penulisan kodemu.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

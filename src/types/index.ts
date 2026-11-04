@@ -35,6 +35,26 @@ export interface MicroComprehensionQuestion {
   }[];
 }
 
+export interface MaterialSection {
+  title: string;
+  content: string;
+  codeSnippet?: string;
+  calloutNote?: string;
+}
+
+export interface LearningMaterial {
+  id: string;
+  title: string;
+  topic: string;
+  readingTimeMinutes: number;
+  pdfFileName: string;
+  pdfFileSize: string;
+  pdfDownloadUrl?: string;
+  summary: string;
+  sections: MaterialSection[];
+  keyTakeaways: string[];
+}
+
 export interface Exercise {
   id: string;
   title: string;
@@ -47,6 +67,7 @@ export interface Exercise {
   testCases: TestCase[];
   socraticHints: SocraticHint[];
   microQuestion: MicroComprehensionQuestion;
+  material?: LearningMaterial;
 }
 
 export interface SessionTelemetry {
@@ -71,6 +92,8 @@ export interface ProcessEvent {
   timestamp: string;
   eventType: 
     | 'MATERIAL_OPEN' 
+    | 'PDF_DOWNLOAD'
+    | 'MATERIAL_READ'
     | 'KEYSTROKE_BURST' 
     | 'PASTE_CHUNK' 
     | 'TEST_RUN' 

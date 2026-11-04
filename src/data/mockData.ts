@@ -1,4 +1,78 @@
-import { Exercise, StudentAnalytics, ProcessEvent } from '../types';
+import { Exercise, StudentAnalytics, ProcessEvent, LearningMaterial } from '../types';
+
+export const LEARNING_MATERIALS: LearningMaterial[] = [
+  {
+    id: 'mat-07-nested-loops',
+    title: 'Modul 07: Perulangan Bersarang (Nested Loops) & Logika Invariant',
+    topic: 'Struktur Kontrol & Dekomposisi Iterasi',
+    readingTimeMinutes: 7,
+    pdfFileName: 'Modul_07_Nested_Loops_IF2104.pdf',
+    pdfFileSize: '1.4 MB',
+    summary: 'Membahas konsep pemetaan baris dan kolom (i vs j), loop invariant, serta manipulasi batas indeks iterasi perulangan bersarang dalam representasi matriks atau pola segitiga.',
+    sections: [
+      {
+        title: '1. Mengapa Perulangan Bersarang Dibutuhkan?',
+        content: 'Dalam pemrograman, sering kali kita menghadapi struktur data multi-dimensi (seperti tabel matriks, piksel citra digital, atau pola geometris). Jika perulangan tunggal (single loop) berjalan dalam satu dimensi linier, maka perulangan bersarang (nested loop) mengontrol dimensi kedua: loop luar mengontrol baris (row), dan loop dalam mengontrol kolom (column).',
+        calloutNote: 'Kaidah Utama: Setiap kali loop luar berputar 1 kali, loop dalam akan berputar sebanyak seluruh siklus batasnya!'
+      },
+      {
+        title: '2. Loop Boundary Mathematics (Formula Batas Indeks)',
+        content: 'Untuk membentuk pola seperti segitiga siku-siku terbalik, jumlah bintang berkurang seiring bertambahnya baris ke-i. Hubungan matematika batas kolom dapat dirumuskan sebagai `j < (n - i)` jika indeks dimulai dari 0.',
+        codeSnippet: `// Loop luar: Mengontrol Baris (i = 0 s.d. n - 1)
+for (let i = 0; i < n; i++) {
+  // Loop dalam: Mengontrol Kolom Bintang (n - i bintang)
+  for (let j = 0; j < n - i; j++) {
+    result += "*";
+  }
+  result += "\\n"; // Newline setelah satu baris tuntas
+}`
+      },
+      {
+        title: '3. Kompleksitas Waktu & Bahaya Infinite Loop',
+        content: 'Kompleksitas perulangan bersarang dua tingkat pada umumnya adalah O(N²). Kesalahan yang paling sering ditemui mahasiswa pemula adalah lupa menaruh increment indeks pada loop dalam (j++) atau salah meletakkan posisi karakter newline (\\n) di dalam loop dalam.',
+        calloutNote: 'Tips Praktikum: Selalu uji dengan n kecil (misal n = 3) di atas kertas coretan sebelum menulis kode di sistem.'
+      }
+    ],
+    keyTakeaways: [
+      'Loop luar mengontrol baris; loop dalam mengontrol karakter per baris.',
+      'Ekspresi (n - i) digunakan untuk menghasilkan pengurangan jumlah elemen secara bertahap.',
+      'Newline (\\n) wajib diletakkan setelah loop dalam selesai agar pergantian baris rapi.'
+    ]
+  },
+  {
+    id: 'mat-08-two-pointer',
+    title: 'Modul 08: Algoritma Two-Pointer & Mutasi Array In-Place',
+    topic: 'Array, Pointer & Manajemen Memori O(1)',
+    readingTimeMinutes: 9,
+    pdfFileName: 'Modul_08_Two_Pointer_Optimization.pdf',
+    pdfFileSize: '2.1 MB',
+    summary: 'Mempelajari optimasi algoritma array menggunakan dua penunjuk indeks (pointer) yang bergerak saling mendekat untuk membalik urutan, deteksi palindrom, dan swapping elemen tanpa alokasi memori tambahan.',
+    sections: [
+      {
+        title: '1. Mengapa Menggunakan Pendekatan Two-Pointer?',
+        content: 'Pendekatan konvensional untuk membalik array biasanya membuat array baru dan menyalin dari belakang, yang memakan memori O(N). Teknik Two-Pointer memungkinkan kita membalik array secara in-place (langsung di tempat) dengan kompleksitas memori O(1), sangat efisien untuk dataset memori besar.',
+        calloutNote: 'Prinsip In-Place: Tidak ada pembuatan struktur data array baru selama proses pembalikan.'
+      },
+      {
+        title: '2. Logika Swapping dengan Variabel Temporary',
+        content: 'Saat menukar posisi elemen `chars[left]` dan `chars[right]`, kita wajib menggunakan variabel penampung sementara (`temp`) agar data asli di sisi kiri tidak terhapus sebelum sempat disalin ke sisi kanan.',
+        codeSnippet: `let temp = chars[left];    // Simpan nilai asli kiri
+chars[left] = chars[right]; // Salin nilai kanan ke kiri
+chars[right] = temp;        // Isi kanan dengan nilai asli kiri yang disimpan di temp`
+      },
+      {
+        title: '3. Kondisi Terminasi Konvergen',
+        content: 'Pointer `left` bergerak maju (`left++`) sedangkan pointer `right` bergerak mundur (`right--`). Perulangan `while (left < right)` akan otomatis berhenti tepat ketika kedua pointer berpapasan di tengah.',
+        calloutNote: 'Peringatan Asdos: Jangan gunakan `left <= right` jika tidak ada aksi khusus pada elemen tepat di tengah.'
+      }
+    ],
+    keyTakeaways: [
+      'Two-Pointer menghemat ruang memori menjadi O(1) Auxiliary Space.',
+      'Variabel temp mutlak dibutuhkan pada pertukaran memori array standar.',
+      'Pergerakan konvergen (left++ dan right--) menjamin algoritma berhenti dalam N/2 iterasi (O(N)).'
+    ]
+  }
+];
 
 export const EXERCISES: Exercise[] = [
   {
@@ -6,6 +80,7 @@ export const EXERCISES: Exercise[] = [
     title: 'Pola Segitiga Siku-Siku Terbalik',
     topic: 'Struktur Kontrol & Nested Loop',
     difficulty: 'Easy',
+    material: LEARNING_MATERIALS[0],
     description: 
       'Buatlah fungsi `generatePattern(n)` yang mencetak pola bintang segitiga siku-siku terbalik berukuran `n`. ' +
       'Baris pertama memiliki `n` bintang, baris kedua `n-1` bintang, hingga baris terakhir hanya memiliki 1 bintang. ' +
@@ -108,6 +183,7 @@ function generatePattern(n) {
     title: 'Two-Pointer In-Place Array Reversal',
     topic: 'Array, Pointer & Mutasi Memori',
     difficulty: 'Medium',
+    material: LEARNING_MATERIALS[1],
     description: 
       'Diberikan sebuah array karakter `chars`. Baliklah urutan elemen array tersebut secara *in-place* ' +
       'menggunakan konsep two-pointer dengan kompleksitas memori O(1). Kembalikan array yang telah dibalik.',

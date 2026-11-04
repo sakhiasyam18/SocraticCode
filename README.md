@@ -35,10 +35,12 @@ SocraticCode merancang antarmuka editor dan interaksi belajar sebagai **sensor t
 ## 📱 2. Empat Layar Utama Sistem (UI/UX Modules)
 
 1. **Student Dashboard:**
+   * **📚 Modul Materi Kuliah (Interactive Reading & PDF Handout):** Kombinasi materi konsep yang dijabarkan langsung di platform dengan visualisasi algoritma & tombol unduh file PDF modul resmi dosen/asdos.
    * Meteran *Live-Coding Readiness Score* (LCRS) personal.
    * Modul latihan terstruktur (*Nested Loops, Two-Pointer, Recursion*).
-   * Status transparansi sensor telemetri aktif.
+   * Status transparansi sensor telemetri aktif (merekam durasi orientasi baca & akses materi).
 2. **Learning Activity Page (Interactive Code Sensor):**
+   * Tab Khusus **"Materi & PDF"** di samping deskripsi soal, memungkinkan mahasiswa membaca kembali teori atau mengunduh handout saat buntu koding.
    * Editor interaktif dengan pemantau ketukan keyboard, detektor *bulk paste*, dan penghitung jeda berpikir (*thinking pauses*).
    * Unit test runner dengan simulasi eksekusi *runtime* (ms).
    * Panel interaktif *Socratic AI Assistant* dengan tombol eskalasi bantuan bertingkat.

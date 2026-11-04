@@ -871,3 +871,4 @@ if (arr[mid] === target) {
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Flame, 
   CheckCircle2, 
@@ -8,14 +8,18 @@ import {
   Code2, 
   Zap, 
   BookOpen, 
-  HelpCircle,
-  TrendingUp,
-  BrainCircuit,
-  AlertTriangle
+  HelpCircle, 
+  TrendingUp, 
+  BrainCircuit, 
+  AlertTriangle,
+  Download,
+  FileText,
+  FileCode,
+  Sparkles
 } from 'lucide-react';
-import { EXERCISES } from '../data/mockData';
-
-import { Exercise } from '../types';
+import { EXERCISES, LEARNING_MATERIALS } from '../data/mockData';
+import { Exercise, LearningMaterial } from '../types';
+import { MaterialReaderModal } from './MaterialReaderModal';
 
 interface StudentDashboardProps {
   onStartExercise: (exerciseId: string) => void;
@@ -26,6 +30,8 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   onStartExercise, 
   exercises = EXERCISES 
 }) => {
+  const [selectedMaterial, setSelectedMaterial] = useState<LearningMaterial | null>(null);
+  const [activeExerciseForMaterial, setActiveExerciseForMaterial] = useState<string | null>(null);
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8 animate-fadeIn">
       
@@ -167,6 +173,89 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
       </div>
 
+      {/* Learning Materials & Lecture Notes Section (Combination of Interactive Reader & PDF Handouts) */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+              <FileText className="w-5 h-5 text-cyan-400" />
+              Materi Kuliah & Modul Bacaan (Handout Resmi Dosen/Asdos)
+            </h2>
+            <p className="text-xs text-slate-400">
+              Kombinasi materi dijabarkan secara interaktif di platform & modul PDF resmi yang dapat diunduh
+            </p>
+          </div>
+          <div className="text-[11px] text-slate-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-1.5 font-mono">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>Aktivitas Membaca Direkam untuk Skor Kesiapan (LA #1)</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {LEARNING_MATERIALS.map((mat) => (
+            <div 
+              key={mat.id}
+              className="glass-panel rounded-3xl p-6 border border-slate-800 hover:border-cyan-500/40 transition-all space-y-4 relative group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  {mat.topic}
+                </span>
+                <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-cyan-400" />
+                  {mat.readingTimeMinutes} Menit Baca
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-base font-extrabold text-white mb-1.5 group-hover:text-cyan-300 transition-colors">
+                  {mat.title}
+                </h3>
+                <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                  {mat.summary}
+                </p>
+              </div>
+
+              {/* Key topics badges */}
+              <div className="flex flex-wrap gap-1.5">
+                {mat.sections.map((sec, i) => (
+                  <span key={i} className="text-[10px] text-slate-400 bg-[#080B12] px-2.5 py-1 rounded-lg border border-slate-800">
+                    {sec.title}
+                  </span>
+                ))}
+              </div>
+
+              {/* Action Buttons: Interactive Reading vs Download PDF */}
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                <button
+                  onClick={() => {
+                    setSelectedMaterial(mat);
+                    // Match corresponding exercise if available
+                    const matchedEx = exercises.find(e => e.topic.toLowerCase().includes(mat.topic.toLowerCase()) || e.title.toLowerCase().includes('pola'));
+                    setActiveExerciseForMaterial(matchedEx?.id || exercises[0]?.id);
+                  }}
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-glow-indigo transition-all"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Pelajari Konsep Interaktif</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedMaterial(mat);
+                  }}
+                  className="py-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-colors"
+                  title="Pratinjau & Unduh File PDF"
+                >
+                  <Download className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>PDF ({mat.pdfFileSize})</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Exercises Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -230,17 +319,47 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 </div>
               </div>
 
-              <button
-                onClick={() => onStartExercise(ex.id)}
-                className="w-full py-3 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm group"
-              >
-                <span>Buka Editor & Mulai Koding</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              <div className="flex items-center gap-2 pt-2">
+                {ex.material && (
+                  <button
+                    onClick={() => {
+                      setSelectedMaterial(ex.material || null);
+                      setActiveExerciseForMaterial(ex.id);
+                    }}
+                    className="py-3 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition-all"
+                    title="Baca Penjelasan Konsep & Unduh PDF Materi"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Materi & PDF</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => onStartExercise(ex.id)}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-glow-indigo group"
+                >
+                  <span>Buka Editor & Koding</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Interactive Material & PDF Reader Modal */}
+      {selectedMaterial && (
+        <MaterialReaderModal
+          material={selectedMaterial}
+          isOpen={!!selectedMaterial}
+          onClose={() => setSelectedMaterial(null)}
+          onStartCoding={() => {
+            if (activeExerciseForMaterial) {
+              onStartExercise(activeExerciseForMaterial);
+            }
+          }}
+        />
+      )}
 
     </div>
   );
